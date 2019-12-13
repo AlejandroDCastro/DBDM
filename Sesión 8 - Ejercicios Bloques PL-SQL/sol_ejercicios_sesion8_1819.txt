@@ -1,0 +1,79 @@
+-- 1 ---
+
+SET SERVEROUTPUT ON;
+DECLARE
+  aux1 recurso_gratuito.codigo%type;
+  Activo EXCEPTION;
+BEGIN
+  -- Si no existe saltará la excepcion no_data_found
+  SELECT codigo INTO aux1 FROM recurso WHERE codigo = 8;
+  -- Comprobamos ahora que no existe en recurso de pago
+  SELECT COUNT(codigo) INTO aux1 FROM recurso_pago  WHERE codigo = 8;
+  IF aux1 > 0 THEN
+    raise Activo;
+  ELSE
+    INSERT INTO recurso_gratuito (codigo,path) VALUES(8,'\\SERVER1\CARPETA');
+    DBMS_OUTPUT.PUT_LINE('Recurso incluido satisfactoriamente');
+  END IF;
+EXCEPTION
+WHEN no_data_found THEN
+  raise_application_error(-20200,'No existe el recurso 8');
+WHEN Activo THEN
+  DBMS_OUTPUT.PUT_LINE('El recurso 8 ya existe como de pago');
+END;
+
+--- 2 ----
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+
+aux1 integer;
+cursor cur1 is select * from visor where empresa='Microsoft';
+
+BEGIN
+
+for reg1 in cur1 loop
+  select count(*) into aux1 from se_visualiza_con where nombre_visor= reg1.nombre;
+
+   if aux1 > 0 then       
+       DBMS_OUTPUT.PUT_LINE('El visor '|| reg1.nombre||' se muestra por algún códec');
+    else
+       DBMS_OUTPUT.PUT_LINE('El visor '|| reg1.nombre||' no se muestra por ningún códec');
+    end if;
+
+end loop;
+
+END;
+
+-- 3 ---
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+
+aux1 integer;
+cursor cur1 is select * from usuarios;
+lo_encontre EXCEPTION;
+
+BEGIN
+
+for reg1 in cur1 loop
+  select count(*) into aux1 from tienen where identificador= reg1.identificador and nombre = 'Chrome';
+
+   if aux1 = 0 then 
+      insert into tienen (version, nombre, identificador, nombre_portal) values 
+       (1,'Chrome',reg1.identificador,'Terra');
+      raise lo_encontre;      
+    else
+       DBMS_OUTPUT.PUT_LINE('El usuario '|| reg1.identificador||' tiene chrome');
+    end if;
+
+end loop;
+
+EXCEPTION
+   WHEN lo_encontre then
+       DBMS_OUTPUT.PUT_LINE('Usuario actualizado');
+
+END;
+

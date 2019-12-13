@@ -1,0 +1,82 @@
+
+----------------
+EJERCICIO 1
+-------------------
+
+
+create or  replace function NumPag (pPortal in varchar2) return number 
+is
+numvisitas number(6);
+existe   varchar2(1) := 'N';
+begin
+ 
+  begin 
+    select 'S' into existe from portales where nombre  = pPortal;
+  exception 
+    when no_data_found then 
+     numvisitas := -1;
+  end;
+  
+  if existe = 'S' then 
+  
+            select sum(v.num_visitas) 
+            into numvisitas
+            from visitas v, paginas p
+            where  p.id_pagina= v.id_pagina  and  p.nombre_portal = pPortal;
+           
+  end if;
+
+return numvisitas;
+
+end NumPag;
+
+----------------------
+Ejercicio 2
+--------------------
+
+Create or replace procedure ModificaCodif  (tipoOrig in varchar2, tipoDes in varchar2) is 
+begin
+
+  if ( tipoOrig is null or tipoDes is  null )  then 
+     raise_application_error (-20001,'Codificación NO VALIDA');
+  else
+    update paginas set codificacion = tipoDes where codificacion = tipoOrig;
+   end if;
+  
+ end ModificaCodif;
+ 
+ ----------------------------------
+ Ejercicio 3
+ -------------------------------------------------------------
+  create or replace  trigger tr1_visitas before insert or update or delete on visitas for each row
+ 
+ begin
+ 
+    if (inserting or updating) and :new.num_visitas <= 0 then 
+        raise_application_error (-20001, 'Operacion no válida');
+    else
+       if  deleting and :old.fecha_visita = trunc(sysdate) then
+         raise_application_error (-20001, 'Operacion no válida');
+       end if;
+    end if;  
+ end;
+ 
+ 
+ -------------------------------------
+ Ejercicio 4
+ ------------------------------------
+ 
+ Create or replace  procedure NumeroVisitas  (pPortal in varchar2) is 
+
+cursor C1  is select num_visitas,  to_char(fecha_visita,'dd/mm/yyyy')  as fecha    from visitas v, paginas p   where  p.id_pagina= v.id_pagina  and  p.nombre_portal = pPortal;
+
+begin
+ 
+For    rC in C1 LOOP 
+    if rC.num_visitas < 5 then 
+         dbms_output.put_line ('El portal '||pPortal||' ha tenido un número BAJO  de vistas el día '|| rC.fecha);
+    else
+       dbms_output.put_line ('El portal '||pPortal||' ha tenido un número ALTO de  vistas el día '|| rC.fecha);
+    end if;
+end loop;
+ end NumeroVisitas;

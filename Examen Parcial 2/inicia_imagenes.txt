@@ -1,0 +1,23 @@
+-- Tabla de imágenes
+
+drop table imagenes;
+
+create table IMAGENES (nombre varchar2(50) not null,
+                       imagen ORDImage,
+constraint pk_imagenes primary key (nombre));
+
+DECLARE
+    x_imagen     ORDImage;
+    CURSOR cursor1 is select nombre, imagen  from dbdm_ivan.imagenes_blob;
+
+BEGIN
+
+
+ for R in cursor1
+ loop
+      x_imagen:= ordsys.ordimage(ordsys.ordsource(R.imagen, null, null, null, null, 1),null, null, null, null, null, null, null);
+      x_imagen.setProperties();
+      insert into IMAGENES (nombre, imagen) values (R.nombre, x_imagen);
+ end loop;
+Commit;
+END;

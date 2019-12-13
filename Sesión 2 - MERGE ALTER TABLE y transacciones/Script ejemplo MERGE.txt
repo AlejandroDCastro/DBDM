@@ -1,0 +1,29 @@
+-- Quitar los comentarios de estas dos líneas para segunda ejecuciones
+
+-- Drop table Tabla_actual;
+-- Drop table Tabla_nueva;
+  
+  Create table Tabla_actual (Articulo_ID varchar2(50) primary key, Articulo_precio number(10,0));
+  Create table Tabla_nueva (Articulo_ID varchar2(50) primary key, Articulo_precio number(10,0), Articulo_borrar char(2));
+  
+  insert into Tabla_actual values ('Espada',1000);
+  insert into Tabla_actual values ('Hacha',2500);
+  insert into Tabla_actual values ('Anillo de poder',5000);
+  insert into Tabla_actual values ('Amuleto de vida',8000);
+  
+  insert into Tabla_nueva values ('Espada',1200,'No');
+  insert into Tabla_nueva values ('Anillo de poder',NULL,'Si');
+  insert into Tabla_nueva values ('Amuleto de vida',8000,'No');
+  insert into Tabla_nueva values ('Arco',10000,'No');
+  
+MERGE INTO Tabla_actual actual
+USING Tabla_nueva nueva
+ON (actual.Articulo_ID = nueva.Articulo_ID)
+WHEN MATCHED THEN
+   UPDATE SET 
+            Articulo_precio = nueva.Articulo_precio
+   DELETE WHERE (nueva.Articulo_borrar = 'Si')
+WHEN NOT MATCHED THEN
+   INSERT (Articulo_ID,Articulo_precio) VALUES (nueva.Articulo_ID, nueva.Articulo_precio);
+
+select * from tabla_actual;

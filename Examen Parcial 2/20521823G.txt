@@ -1,0 +1,95 @@
+-----------------------------------------
+-- Apellidos y nombre: Alejandro Castro Valero
+-----------------------------------------
+
+-- Instrucciones
+
+-- NO te debes conectar a Internet. 
+-- La primera línea del fichero es tu nombre y apellidos. En este fichero debes ir poniendo las soluciones a los ejercicios. ¡¡ Guarda con frecuencia !!
+-- DEBES escribir en el fichero de texto y copiar y pegar en SQLDEVELOPER. Así, si se cierra la conexión con ORACLE sin haber ejecutado, no perderás lo que has realizado. 
+-- Si no lo haces así debes asumir cualquier pérdida que tengas por problemas con la conexión.
+-- El profesor te avisará cuando queden 10 min, 5 min y 2 min para terminar el control y te indicará dónde debes entregar el fichero con las soluciones.
+-- Antes de irte borra tus ficheros del Escritorio.
+
+-- Inserta tu respuesta en el hueco de cada pregunta
+
+
+-- Pregunta 1:
+
+create or replace function devuelvetamanyo(pcod number) return number is
+    tam_recurso number:=0;
+    existe_rec number;
+    cursor c1 is select * from recurso;
+begin
+    if pcod=null then
+        for rec in c1 loop
+            tam_recurso := tam_recurso + rec.tamanyo;
+        end loop;
+        return tam_recurso/1024;
+    end if;
+    select count(*) into existe_rec from recurso where codigo=pcod;
+    if existe_rec=0 then
+        return -1;
+    end if;
+    if existe_rec>1 then
+        select tamanyo into tam_recurso from recurso where pcod=codigo;
+        return tam_recurso/1024;
+    end if;
+end;
+
+
+
+
+-- Pregunta 2:
+
+create or replace procedure escalaimagenes(pmascara varchar2) is
+    cursor c1 is select * from imagenes;
+    pimagen ordimage;
+begin
+    for img in c1 loop
+    select imagen into pimagen from imagenes where img.nombre=nombre for update;
+        if img.nombre like pmascara then
+            if pimagen.getMimeType()='image/jpeg' or pimagen.getMimeType()='image/png' then
+                if pimagen.getMimeType()='image/jpeg' then
+                    pimagen.process('scale="2"');
+                elsif pimagen.getMimeType()='image/png' then
+                    pimagen.process('scale="3"');
+                end if;
+                pimagen.setProperties();
+                update imagenes set imagen=pimagen where nombre=img.nombre;
+            else
+                dbms_output.put_line('Imagen de mime type ' || pimagen.getMimeType() || ' no procesada');
+            end if;
+        end if;
+    end loop;
+end;
+
+
+
+-- Pregunta 3:
+
+create or replace trigger controladescargas
+before insert or update on recurso_gratuito
+for each row
+declare
+    num_descargas number;
+begin
+    if inserting or (updating and :old.max_descargas!=:new.max_descargas) then
+        select contador into num_descargas from contador_descargas where :new.codigo=cod_recurso;
+        if num_descargas>:new.max_descargas then
+            raise_application_error(-20001,'Número máximo de descargas actuales está sobrepasado. El valor actual es ' || num_descargas);
+        end if;
+    end if;
+end;
+
+
+
+
+-- Resolucion
+
+-- Pregunta 1: 2 de 3 Para comparar con NULL usaremos el operador IS, no el =. En el último if, debías poner >=, ya que como lo has hecho tú no devuelve nada nunca. Para acumular en el caso de devolver el tamaño total, era mejor usar la función agregada SUM. Como lo has hecho tú es muy ineficiente.
+-- Pregunta 2: 4 de 4
+-- Pregunta 3: 2 de 3 Debías sumar el valor total del contador. Piensa que el mismo recurso puede estar muchas veces en la tabla.
+
+
+

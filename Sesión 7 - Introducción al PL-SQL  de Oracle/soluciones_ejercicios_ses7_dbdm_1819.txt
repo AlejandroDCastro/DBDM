@@ -1,0 +1,95 @@
+-- ejercicio 1
+
+SET SERVEROUTPUT ON;
+
+declare 
+
+   aux_contador number:=0;
+   
+begin
+
+    select count(*) 
+    into   aux_contador 
+    from   recurso;
+    
+    if aux_contador >5 then 
+        dbms_output.put_line('hay mas de 5 recursos');
+    else
+        dbms_output.put_line('hay 5 o menos recursos');
+    end if;
+    
+end;    
+    
+    
+    
+-- Ejercicio 2
+
+SET SERVEROUTPUT ON;
+
+declare 
+
+   aux_gratis number:=0;
+   aux_pago   number:=0;
+   
+begin
+
+    select count(*) 
+    into   aux_gratis 
+    from   recurso_gratuito;
+   
+    select count(*) 
+    into   aux_pago
+    from   recurso_pago;
+      
+    if aux_gratis >=  aux_pago  then 
+         raise_application_error (-20001,'ERROR--> Hay   alto porcentaje de recursos gratuitos');
+    end if;
+      
+end;    
+    
+    
+    
+-- Ejercicio 3
+
+declare 
+   i number;
+   CURSOR c1 is select * from RECURSO order by descripcion;
+   
+begin
+
+    i := 0;
+    FOR r_aux IN c1 LOOP  
+         if r_aux.nombre_formato = 'MP3'  then 
+             update recurso set descripcion = upper(descripcion) where codigo = r_aux.codigo;
+             i:=i+1;
+         end if;
+         
+         if i>=2 then 
+            exit;
+         end if;
+         
+    END LOOP;
+    commit;
+      
+end;    
+   
+   
+-- ejercicio 4
+
+
+declare 
+   max_codigo number;
+begin
+
+ begin
+  insert into recurso  (codigo, descripcion, nombre_formato) values(1,'recurso x','MP3');
+  exception 
+      when dup_val_on_index then 
+        select max(codigo)+1  into max_codigo from recurso;
+       insert into recurso  (codigo, descripcion, nombre_formato) values(max_codigo,'recurso x','MP3');
+  end;
+
+end;       
+    
+    
+    

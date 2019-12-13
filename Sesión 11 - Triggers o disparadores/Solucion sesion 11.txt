@@ -1,0 +1,76 @@
+-- Ejercicio 1
+
+CREATE TABLE aud_navegadores
+  (
+    nombre VARCHAR(50),
+    anyo   DATE NOT NULL,
+    accion VARCHAR2(1) ,
+    CONSTRAINT CHK_AUD_NAVEGADORES CHECK (accion IN ('I','B','M')),
+    fecha DATE DEFAULT sysdate NOT NULL
+  );
+
+-- Ponemos la fecha como DEFAULT sysdate para no tener que incluirlo en las inserciones
+
+create or replace TRIGGER tr_aud_navegadores AFTER INSERT OR UPDATE OR DELETE ON navegadores
+FOR EACH ROW
+BEGIN
+  IF INSERTING THEN
+      insert into aud_navegadores (nombre,anyo,accion) values (:new.nombre,:new.anyo,'I');
+  END IF;
+  IF DELETING THEN
+      insert into aud_navegadores (nombre,anyo,accion) values (:old.nombre,:old.anyo,'B');
+  END IF;
+  IF UPDATING THEN
+      insert into aud_navegadores (nombre,anyo,accion) values (:old.nombre,:old.anyo,'M');
+  END IF;
+
+END;
+
+-- Ejercicio 2
+-- Recordad que aquí el orden de borrado es importante para que se mantenga la integridad referencial
+-- Debemos borrar en la tabla Tienen antes que en la tabla Versiones, o fallará el trigger
+
+create or replace TRIGGER tr_bor_navegadores BEFORE DELETE ON navegadores
+FOR EACH ROW
+BEGIN
+   delete SUMINISTRAN WHERE nombre = :old.nombre;   
+   delete tienen where nombre = :old.nombre;
+   delete versiones where nombre = :old.nombre;
+   delete disponible_para where nombre_navegador = :old.nombre;
+END;
+
+
+-- Ejercicio 3
+
+create or replace TRIGGER TGR_RECURSO1 BEFORE INSERT   
+ON  RECURSO  
+FOR EACH ROW
+
+declare
+xcontador number :=0;
+
+begin
+  select count(*) 
+  into xcontador
+  from  formato f
+  where f.nombre = :new.nombre_formato;
+  
+  if xcontador = 0 then -- no existe
+    insert into  formato (nombre, descripcion, anyo) values (:new.nombre_formato,:new.nombre_formato, null);
+  end if;
+
+end;
+
+
+-- Ejercicio 4
+
+
+create or replace TRIGGER TGR_RECURSO2  AFTER INSERT   
+ON  RECURSO  
+FOR EACH ROW
+begin
+  if :new.nombre_formato = 'JPG'  then 
+    insert into  RECURSO_GRATUITO (CODIGO) VALUES (:new.codigo);
+  end if;
+
+end;

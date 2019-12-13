@@ -1,0 +1,113 @@
+-- Ejercicio 1
+
+Create or replace function ses9_ejer3 (pFormato in varchar2) return varchar2 is
+    aux_descrip recurso.descripcion%TYPE;
+    txt_a_devolver varchar2(100);
+begin
+ 
+ begin
+  select descripcion 
+  into aux_descrip
+  from recurso  
+  where  nombre_formato = pFormato;
+  txt_a_devolver :=  aux_descrip;
+  
+  exception 
+      when too_many_rows then
+             txt_a_devolver :=   'hay mas de un recurso de ese formato';
+      when no_data_found then
+            txt_a_devolver :=   'No hay ningun recurso con ese formato';
+  end;
+ 
+  return   txt_a_devolver;
+end; 
+
+-- Ejercicio 2
+
+create or replace function NumVersiones  (pNombre IN varchar2) return number is
+ 
+wnum number;
+wtmp varchar2(1);
+ 
+BEGIN
+ 
+   begin
+      select 'S' into wtmp from navegadores where nombre = pNombre;
+      select count(*) into wnum from versiones v where nombre=pNombre;
+   exception 
+   When no_data_found then
+        wnum:=-1;
+   end;   
+   return wnum;
+         
+END;
+
+
+-- Ejercicio 3
+
+create or replace function  NumeroRecursos (pFormato in varchar2) return number    is
+
+xnRecursos  number;
+
+BEGIN 
+  
+  select count(*)
+  into xnRecursos
+  from RECURSO 
+  where nombre_formato = pFormato;
+  
+  
+  return xnRecursos;
+    
+END;
+
+create or replace view V_FORMATO as 
+select nombre, NumeroRecursos(nombre) as numero
+from formato;
+
+-- Ejercicio 4
+
+create or replace
+function  nMismoFormato (pCodigo in number) return number    is
+
+xnRecursos  number:=0;
+
+xnombre_formato RECURSO.NOMBRE_FORMATO%type;
+
+BEGIN 
+  
+  begin
+    select nombre_formato
+    into xnombre_formato
+    from RECURSO 
+    where codigo  = pCodigo;
+  exception 
+     when no_data_found then 
+        xnRecursos := -1;
+  end;
+  
+  if xnRecursos <> -1 then /* El recurso existe */
+    select count(*)
+    into xnRecursos
+    from RECURSO 
+     where nombre_formato = xnombre_formato;
+  end if;
+  
+  return xnRecursos;
+    
+END;
+
+-- Ejercicio 5
+Create or replace function Dame_Tamanyo_minmax (ptipo int) return Disponible_para.tamanyo%type
+is
+vAux Disponible_para.tamanyo%type:=0;
+
+BEGIN
+if ptipo = 1 then
+    select min(tamanyo) into vAux from Disponible_para;
+elsif ptipo = 2 then
+   select max(tamanyo) into vAux from Disponible_para;
+end if;
+
+Return vAux;
+END;

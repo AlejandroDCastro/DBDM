@@ -1,0 +1,546 @@
+-- Borrado previo
+DROP TABLE partidas;
+
+DROP TABLE personajes;
+
+DROP TABLE registro_entradas;
+
+DROP TABLE jugadores;
+
+DROP TABLE jugadores_nuevos;
+
+-- Ejercicio 1
+
+CREATE TABLE jugadores (
+    jugador_id           VARCHAR2(50) NOT NULL,
+    jugador_nombre       VARCHAR2(50) NOT NULL,
+    jugador_fecha_alta   DATE NOT NULL,
+    jugador_activo       INT DEFAULT 1 NOT NULL,
+    CONSTRAINT pk_jugadores PRIMARY KEY ( jugador_id ),
+    CONSTRAINT chk_jugador_activo CHECK ( jugador_activo IN (
+        0,
+        1
+    ) )
+);
+
+CREATE TABLE personajes (
+    personaje_id       VARCHAR2(10) NOT NULL,
+    personaje_nombre   VARCHAR2(50) NOT NULL,
+    personaje_tipo     VARCHAR2(10) NOT NULL,
+    personaje_sexo     CHAR(1) NOT NULL,
+    personaje_avatar   VARCHAR2(200),
+    CONSTRAINT pk_personajes PRIMARY KEY ( personaje_id ),
+    CONSTRAINT chk_sexo_personaje CHECK ( upper(personaje_sexo) IN (
+        'H',
+        'M'
+    ) ),
+    CONSTRAINT chk_avatar CHECK (
+        personaje_avatar LIKE 'http://%'
+        OR personaje_avatar LIKE 'https://%'
+    )
+);
+
+CREATE TABLE partidas (
+    partida_jugador_id     VARCHAR2(50) NOT NULL,
+    partida_personaje_id   VARCHAR2(10) NOT NULL,
+    partida_duracion       INT DEFAULT 0 NOT NULL,
+    partida_fecha_inicio   DATE DEFAULT SYSDATE NOT NULL,
+    partida_fecha_fin      DATE NULL,
+    CONSTRAINT pk_partida PRIMARY KEY ( partida_jugador_id,
+                                        partida_personaje_id,
+                                        partida_fecha_inicio ),
+    CONSTRAINT fk_partida_jugador FOREIGN KEY ( partida_jugador_id )
+        REFERENCES jugadores,
+    CONSTRAINT fk_partida_personaje FOREIGN KEY ( partida_personaje_id )
+        REFERENCES personajes
+);
+
+-- Ejercicio 2
+
+DROP TABLE partidas;
+
+CREATE TABLE partidas (
+    partida_jugador_id     VARCHAR2(50) NOT NULL,
+    partida_personaje_id   VARCHAR2(10) NOT NULL,
+    partida_duracion       INT DEFAULT 0 NOT NULL,
+    partida_fecha_inicio   DATE DEFAULT SYSDATE NOT NULL,
+    partida_fecha_fin      DATE NULL,
+    partida_puntuacion     INT NULL,
+    CONSTRAINT pk_partida PRIMARY KEY ( partida_jugador_id,
+                                        partida_personaje_id,
+                                        partida_fecha_inicio ),
+    CONSTRAINT fk_partida_jugador FOREIGN KEY ( partida_jugador_id )
+        REFERENCES jugadores,
+    CONSTRAINT fk_partida_personaje FOREIGN KEY ( partida_personaje_id )
+        REFERENCES personajes
+);
+
+-- Ejercicio 3
+
+INSERT INTO personajes (
+    personaje_id,
+    personaje_nombre,
+    personaje_tipo,
+    personaje_sexo
+) VALUES (
+    'MAGO',
+    'Hechicero hombre',
+    'MAGO',
+    'H'
+);
+
+INSERT INTO personajes (
+    personaje_id,
+    personaje_nombre,
+    personaje_tipo,
+    personaje_sexo
+) VALUES (
+    'HECHICERA',
+    'Hechicera mujer',
+    'MAGO',
+    'H'
+);
+
+INSERT INTO personajes (
+    personaje_id,
+    personaje_nombre,
+    personaje_tipo,
+    personaje_sexo
+) VALUES (
+    'PALO',
+    'Caballero masculino',
+    'CABALLERO',
+    'H'
+);
+
+INSERT INTO personajes (
+    personaje_id,
+    personaje_nombre,
+    personaje_tipo,
+    personaje_sexo
+) VALUES (
+    'PALA',
+    'Caballero femenino',
+    'CABALLERO',
+    'M'
+);
+
+INSERT INTO personajes (
+    personaje_id,
+    personaje_nombre,
+    personaje_tipo,
+    personaje_sexo
+) VALUES (
+    'BARBA',
+    'Bárbaro femenino',
+    'BÁRBARO',
+    'M'
+);
+
+INSERT INTO personajes (
+    personaje_id,
+    personaje_nombre,
+    personaje_tipo,
+    personaje_sexo
+) VALUES (
+    'BARBO',
+    'Bárbaro masculino',
+    'BÁRBARO',
+    'H'
+);
+
+INSERT INTO jugadores (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugador1@dbdm.es',
+    'Jugador 1',
+    TO_DATE('01012016','DDMMYYYY'),
+    1
+);
+
+INSERT INTO jugadores (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugadora2@dbdm.es',
+    'Jugadora 2',
+    TO_DATE('01012017','DDMMYYYY'),
+    1
+);
+
+INSERT INTO jugadores (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugadora3@dbdm.es',
+    'Jugadora 3',
+    TO_DATE('01012011','DDMMYYYY'),
+    1
+);
+
+INSERT INTO jugadores (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugador4@dbdm.es',
+    'Jugador 4',
+    TO_DATE('01012018','DDMMYYYY'),
+    0
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugador1@dbdm.es',
+    'BARBA',
+    140,
+    TO_DATE('02-02-2016 18:00:00','DD-MM-YYYY HH24:MI:SS'),
+    TO_DATE('03-02-2016 20:05:00','DD-MM-YYYY HH24:MI:SS'),
+    520
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugador1@dbdm.es',
+    'PALA',
+    180,
+    TO_DATE('05-02-2017 21:00:05','DD-MM-YYYY HH24:MI:SS'),
+    TO_DATE('06-02-2017 23:15:12','DD-MM-YYYY HH24:MI:SS'),
+    620
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugadora2@dbdm.es',
+    'BARBA',
+    30,
+    TO_DATE('02-02-2016 10:15:00','DD-MM-YYYY HH24:MI:SS'),
+    TO_DATE('02-02-2016 16:12:25','DD-MM-YYYY HH24:MI:SS'),
+    600
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugadora2@dbdm.es',
+    'BARBO',
+    40,
+    TO_DATE('11-07-2018 23:30:00','DD-MM-YYYY HH24:MI:SS'),
+    TO_DATE('12-07-2018 01:12:23','DD-MM-YYYY HH24:MI:SS'),
+    400
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugadora2@dbdm.es',
+    'PALO',
+    10,
+    TO_DATE('02-01-2019 00:00:00','DD-MM-YYYY HH24:MI:SS'),
+    TO_DATE('02-01-2019 04:12:12','DD-MM-YYYY HH24:MI:SS'),
+    300
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugadora3@dbdm.es',
+    'PALA',
+    150,
+    TO_DATE('28-01-2019 17:00:00','DD-MM-YYYY HH24:MI:SS'),
+    NULL,
+    NULL
+);
+
+INSERT INTO partidas (
+    partida_jugador_id,
+    partida_personaje_id,
+    partida_duracion,
+    partida_fecha_inicio,
+    partida_fecha_fin,
+    partida_puntuacion
+) VALUES (
+    'Jugadora2@dbdm.es',
+    'BARBA',
+    25,
+    TO_DATE('28-01-2019 19:00:00','DD-MM-YYYY HH24:MI:SS'),
+    NULL,
+    NULL
+);
+
+-- Ejercicio 4
+
+UPDATE personajes
+SET
+    personaje_sexo = 'M'
+WHERE
+    personaje_id = 'HECHICERA';
+
+-- Ejercicio 5
+
+SELECT
+    *
+FROM
+    jugadores
+WHERE
+    TO_CHAR(jugador_fecha_alta,'YYYY') = '2018';
+
+-- Ejercicio 6
+
+SELECT
+    jugador_id,
+    jugador_nombre,
+    SUM(partida_duracion) / 24 AS duracion
+FROM
+    jugadores
+    INNER JOIN partidas ON jugador_id = partida_jugador_id
+WHERE
+    TO_CHAR(partida_fecha_inicio,'YYYY-MM-DD') > '2019-01-01'
+GROUP BY
+    jugador_id,
+    jugador_nombre
+HAVING
+    SUM(partida_duracion) / 60 > 6
+ORDER BY
+    SUM(partida_duracion) DESC;
+
+--Ejercicio 7
+
+SELECT
+    personaje_id,
+    personaje_nombre,
+    COUNT(DISTINCT partida_jugador_id) AS jugadores_usan
+FROM
+    personajes left
+    JOIN partidas ON personaje_id = partida_personaje_id
+GROUP BY
+    personaje_id,
+    personaje_nombre
+ORDER BY
+    COUNT(DISTINCT partida_jugador_id) DESC;
+
+-- Solución equivalente, usando right join
+
+SELECT
+    personaje_id,
+    personaje_nombre,
+    COUNT(DISTINCT partida_jugador_id) AS jugadores_usan
+FROM
+    partidas right
+    JOIN personajes ON personaje_id = partida_personaje_id
+GROUP BY
+    personaje_id,
+    personaje_nombre
+ORDER BY
+    COUNT(DISTINCT partida_jugador_id) DESC;
+
+-- Ejercicio 8
+
+SELECT
+    jugador_id,
+    jugador_nombre,
+    MAX(partida_puntuacion) AS maximo,
+    MIN(partida_puntuacion) AS minimo,
+    AVG(partida_puntuacion) AS media
+FROM
+    jugadores
+    INNER JOIN partidas ON partida_jugador_id = jugador_id
+                           AND partida_fecha_fin IS NOT NULL
+WHERE
+    jugador_activo = 1
+GROUP BY
+    jugador_id,
+    jugador_nombre;
+
+-- Ejercicio 9
+    
+SELECT
+    TO_char(partida_fecha_inicio,'Day') AS dia,
+    personaje_nombre,
+    COUNT(*) AS veces_utilizado
+FROM
+    personajes
+    INNER JOIN partidas ON personaje_id = partida_personaje_id
+WHERE
+    partida_fecha_fin IS NOT NULL
+    AND partida_puntuacion IS NOT NULL
+    AND partida_puntuacion <> 0
+GROUP BY
+    to_char(partida_fecha_inicio,'Day'),to_char(partida_fecha_inicio,'D'),
+    personaje_id,
+    personaje_nombre
+ORDER BY
+    TO_CHAR(partida_fecha_inicio,'D') ASC;
+        
+-- Ejercicio 10
+
+DELETE partidas
+WHERE
+    TO_CHAR(partida_fecha_inicio,'YYYY') < '2018'; 
+
+-- Fin de la sesión 1
+--------------------------------------
+-- Sesión 2
+
+CREATE TABLE jugadores_nuevos (
+    jugador_id           VARCHAR2(50) NOT NULL,
+    jugador_nombre       VARCHAR2(50) NOT NULL,
+    jugador_fecha_alta   DATE NOT NULL,
+    jugador_activo       INT DEFAULT 1 NOT NULL);
+
+INSERT INTO jugadores_nuevos (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugador1@dbdm.es',
+    'Jugador 1',
+    TO_DATE('01012018','DDMMYYYY'),
+    1
+);
+
+INSERT INTO jugadores_nuevos (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugadora21@dbdm.es',
+    'Jugadora 21',
+    TO_DATE('01012016','DDMMYYYY'),
+    1
+);
+
+INSERT INTO jugadores_nuevos (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugadora33@dbdm.es',
+    'Jugadora 33',
+    TO_DATE('01012011','DDMMYYYY'),
+    1
+);
+
+INSERT INTO jugadores_nuevos (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+) VALUES (
+    'Jugador4@dbdm.es',
+    'Jugador 4',
+    TO_DATE('01012017','DDMMYYYY'),
+    0
+);
+
+-- Ejercicio 1
+
+MERGE INTO Jugadores ahora
+USING jugadores_nuevos nuevos
+ON (ahora.Jugador_ID = nuevos.Jugador_ID)
+WHEN MATCHED THEN
+   UPDATE SET 
+            Jugador_nombre = ahora.Jugador_nombre || '(*)',
+            Jugador_activo = nuevos.Jugador_activo,
+            Jugador_fecha_alta = SYSDATE
+   DELETE WHERE (ahora.Jugador_activo = 0 and nuevos.Jugador_activo = 0)
+WHEN NOT MATCHED THEN
+   INSERT (
+    jugador_id,
+    jugador_nombre,
+    jugador_fecha_alta,
+    jugador_activo
+)  VALUES (nuevos.Jugador_ID, nuevos.Jugador_nombre, SYSDATE,1);
+
+-- Ejercicio 2
+
+Create table Registro_entradas (Jugador_SK int GENERATED ALWAYS AS IDENTITY CONSTRAINT PK_regentrada PRIMARY KEY, Jugador_ID varchar2(50) NOT NULL CONSTRAINT FK_REGISTRO_ENTRADA_JUGADOR REFERENCES JUGADORES, Registro_fecha_hora DATE not null, Registro_valido int DEFAULT 1 NOT NULL CONSTRAINT CHK_reg_valido check (Registro_valido in (0,1)));
+
+-- Ejercicio 3
+
+INSERT INTO REGISTRO_ENTRADAS (JUGADOR_ID,REGISTRO_FECHA_HORA,REGISTRO_VALIDO) VALUES ('jugador2@dbdm.es',TO_DATE('01012017','DDMMYYYY'),0);
+INSERT INTO REGISTRO_ENTRADAS (JUGADOR_ID,REGISTRO_FECHA_HORA,REGISTRO_VALIDO) VALUES ('jugador22',TO_DATE('05012017','DDMMYYYY'),1);
+
+SELECT * FROM REGISTRO_ENTRADAS;
+
+-- Ejercicio 4
+
+-- Alter table sirve para modificar la estructura de la tabla, y update para modificar filas de la tabla
+
+ -- Ejercicio 5
+ 
+ Alter table partidas add (Partida_puntuacion_ej4 int null);
+
+-- Ejercicio 6
+
+Delete from Registro_entradas;
+Alter table Registro_entradas add (CONSTRAINT FK_reg_ent_jugadores FOREIGN KEY (Jugador_ID) REFERENCES Jugadores);
+Alter table Registro_entradas modify (Registro_fecha_hora DEFAULT SYSDATE);
+
+-- Ejercicio 7
+
+INSERT INTO REGISTRO_ENTRADAS (JUGADOR_ID,REGISTRO_FECHA_HORA,REGISTRO_VALIDO) VALUES ('Jugador1@dbdm.es',SYSDATE,1);
+
+select * from registro_entradas;
+
+-- Sale la fila insertada
+
+rollback;
+
+-- Ahora no sale
+
+-- Ejercicio 8
+
+-- Antes del commit no salía, y después sí
+
+ 
+ 
+
+
+
+
+

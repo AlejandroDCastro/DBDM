@@ -1,0 +1,71 @@
+-- ejercicio 1
+
+
+create or replace procedure  insertaRecurso (pCodigo in number, pDescripcion in varchar2, pFormato in varchar2, pTipo in VARCHAR2, pPrecio in number) is
+ 
+begin
+
+ begin
+  insert into recurso  (codigo, descripcion, falta, nombre_formato) values(pcodigo,pDescripcion,sysdate, pFormato);
+  exception 
+      when dup_val_on_index then 
+       raise_application_error (-20001,'El recurso ya existe');       
+  end;
+  
+  if ptipo = 'PAGO' then 
+      insert into recurso_pago(codigo, precio) values (pCodigo, pPrecio);
+  else
+    insert into recurso_gratuito (codigo) values (pCodigo);
+   end if;
+
+end;
+    
+
+    
+-- Ejercicio 2
+
+create or replace
+procedure ActualizaPrecios (pFormato in varchar2,  pPorcen in number )   is
+
+cursor C1 is 
+select r.codigo
+from  RECURSO r, RECURSO_PAGO p
+where nombre_formato =pFormato and p.codigo = r.codigo  and p.precio > 15
+
+xpreciofinal number;
+
+BEGIN 
+  
+  for r_aux in C1 LOOP
+     incrementaPrecio (r_aux.codigo,pPorcen, xPrecioFinal );
+     if xPrecioFinal > 100 then 
+        update RECURSO_PAGO set precio = 100 where codigo = r_aux.codigo;
+     end if;
+   end LOOP;
+   
+  commit; 
+END;
+    
+-- Ejercicio 3
+
+Create or replace procedure InsAcc (pCodigo in number, pMes in Varchar2)   IS
+ 
+Cursor C1 is select identificador  from usuarios;
+ 
+ 
+BEGIN
+     
+  for r_aux in C1 LOOP   
+      begin
+           insert into control_acceso ( id_usuario,cod_recurso, mes) 
+           values    (r_aux.identificador, pCodigo,  pMes);
+      exception        
+        when DUP_VAL_ON_INDEX   then
+           dbms_output.put_line ('Obviando la inserción para el usuario '|| r_aux.identificador);
+        when Others  then
+           raise_application_error(-20001,' Error en la inserción');
+      end;
+    
+  end LOOP;
+   
+  END;   

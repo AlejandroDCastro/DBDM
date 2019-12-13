@@ -1,0 +1,60 @@
+-----------------------------------------
+-- Apellidos y nombre: Castro Valero Alejandro
+-----------------------------------------
+
+-- Turno: Lunes 17:00 a 19:00  TURNO 1
+
+-- Instrucciones
+
+-- NO te debes conectar a Internet. 
+-- La primera línea del fichero es tu nombre y apellidos. En este fichero debes ir poniendo las soluciones a los ejercicios. ¡¡ Guarda con frecuencia !!
+-- DEBES escribir en el fichero de texto y copiar y pegar en SQLDEVELOPER. Así, si se cierra la conexión con ORACLE sin haber ejecutado, no perderás lo que has realizado. 
+-- Si no lo haces así debes asumir cualquier pérdida que tengas por problemas con la conexión.
+-- El profesor te avisará cuando queden 10 min, 5 min y 2 min para terminar el control y te indicará dónde debes entregar el fichero con las soluciones.
+-- Antes de irte borra tus ficheros del Escritorio.
+
+-- Inserta tu respuesta en el hueco de cada pregunta
+
+
+-- Pregunta 1:
+
+create table ranking (
+    clave_sk int generated always as identity start with 1000 increment by 10,
+    codigo varchar2(5) not null,
+    puntos_historicos int not null,
+    constraint pk_ranking primary key (clave_sk),
+    constraint fk_codigo foreign key (codigo) references jugadores,
+);
+
+-- Pregunta 2:
+
+alter table ranking add (ultima_actualizacion date default sysdate not null);
+
+-- Pregunta 3:
+
+create or replace view jugadores_fieles
+as select j.jugador_id, j.jugador_nombre, count(*) partidas_jugadas, sum(partida_duracion) duracion_total
+from jugadores j, partidas p
+where j.jugador_id=p.partida_jugador_id
+group by j.jugador_id, j.jugador_nombre
+having sum(partida_duracion)>=150;
+
+-- Pregunta 4:
+
+El problema es que existen 2 jugadores con el mismo ID, en este caso "_id":1. Lo que hacemos es cambiar el ID del último jugador a 4.
+
+mongoimport --db Control1 --collection Jugadores --file Jugadores.json --jsonArray
+
+-- Pregunta 5:
+
+db.Jugadores.find({"Genero":"Femenino"},{"_id":1, "Nombre":1, "Genero":1}).pretty()
+
+-- Pregunta 6:
+
+db.Jugadores.remove({"Activo":"N"});
+
+
+
+
+
+

@@ -1,0 +1,46 @@
+
+EJERCICIo 1
+
+CREATE OR REPLACE PROCEDURE CambiarFormato (pMaximo in number) AS 
+
+CURSOR cursor1 is select nombre, imagen  from imagenes for update;
+
+BEGIN
+ for R in cursor1
+ loop
+     if r.imagen.getContentLength() > pMaximo and r.imagen.getFileFormat()<>'PNGF'  then 
+        -- cambiamos a PNG
+         r.imagen.process('fileFormat=PNGF'); 
+         r.imagen.setProperties();
+          update imagenes set imagen = r.imagen where nombre = r.nombre;
+          dbms_output.put_line ('cambiada la imagen '||r.nombre||' a PNG');
+     end if;
+ end loop;  
+ COMMIT;
+END;
+
+
+EJERCICIO2 
+
+CREATE OR REPLACE function  DimeMimeType (pnombre in varchar2) return varchar2  AS 
+
+x_img ORDImage;
+
+begin
+    
+  begin
+     select imagen into x_img from imagenes where nombre = pnombre;    
+     return  x_img.getMimeType(); 
+    exception
+       When no_data_found then 
+          return 'XX';
+   end;
+   
+end;
+
+create or replace view v_MimeTypes as 
+select  DimeMimeType (nombre) as Mime , count(*) as cantidad
+from imagenes
+group by  DimeMimeType (nombre);
+
+

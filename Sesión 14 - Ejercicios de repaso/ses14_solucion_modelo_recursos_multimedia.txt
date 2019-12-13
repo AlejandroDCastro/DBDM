@@ -1,0 +1,75 @@
+
+1.- 
+
+create or replace function TIENENPORTALES   (pPortal  IN varchar2) return number is
+ 
+wexiste varchar2(1); 
+wnum    number;
+
+BEGIN
+   begin
+    select 'S'  into wexiste  from portales   where nombre  = pPortal;
+    select count(*)  into wnum  from tienen  where nombre_portal  = pPortal;
+    if wnum = 0 then 
+        wnum := -1;
+    end if;
+  exception 
+    when no_data_found then 
+         wnum := -99;
+  end;
+   
+  return wnum;
+        
+END;
+
+
+2.- 
+
+create or replace procedure  MULTIPLICAR_PRECIOS   (pRecurso in number )  is
+
+waccesos number;
+
+BEGIN
+    select count(*) into waccesos from CONTROL_ACCESO where cod_recurso = pRecurso;
+    if waccesos > 2 then 
+         update recurso_pago set precio = precio*2 where codigo=pRecurso;
+    end if;
+  
+END;
+
+
+3.- 
+
+create or replace TRIGGER TR1_c2_martes_19 before insert or update   on RECURSO_PAGO 
+FOR EACH ROW 
+BEGIN
+   if  :new.precio >  200  THEN 
+      raise_application_error (-20001,'No es posible precios tan altos');
+   else
+     if :new.precio <10 then 
+        :new.precio :=10;
+      end if;    
+   end if;
+  
+END;
+
+4.- 
+
+create or replace
+procedure BorrarRecursos (pFormato in varchar2 )   is 
+
+cursor C1 is select r.codigo,r.descripcion  from recurso r, recurso_pago p where r.codigo = p.codigo 
+and r.nombre_formato = pFormato;
+
+Begin
+
+ for r_aux in C1 LOOP   
+      begin 
+       delete from recurso_pago where codigo = r_aux.codigo;
+      exception        
+        when OTHERS   then 
+           dbms_output.put_line ('No se ha podido borrar el recurso  '|| r_aux.descripcion);
+         end;
+   
+  end LOOP;
+end;

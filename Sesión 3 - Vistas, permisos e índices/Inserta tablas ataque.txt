@@ -1,0 +1,10 @@
+
+-- Ejercicio 2
+
+insert into ataque_cuerpo_a_cuerpo (Personaje_ID, Ataque_manos, Ataque_fuerza) values ('PALO',1,70);
+insert into ataque_cuerpo_a_cuerpo (Personaje_ID, Ataque_manos, Ataque_fuerza) values ('PALA',1,60);
+insert into ataque_cuerpo_a_cuerpo (Personaje_ID, Ataque_manos, Ataque_fuerza) values ('BARBO',2,100);
+insert into ataque_cuerpo_a_cuerpo (Personaje_ID, Ataque_manos, Ataque_fuerza) values ('BARBA',2,90);
+
+insert into ataque_a_distancia (Personaje_ID, Distancia_hechizos, Distancia_destreza) values ('MAGO',1,200);
+insert into ataque_a_distancia (Personaje_ID, Distancia_hechizos, Distancia_destreza) values ('HECHICERA',1,300);

@@ -1,0 +1,42 @@
+
+EJERCICIO 1
+
+create or replace trigger ses14_trg1_inter
+BEFORE DELETE OR UPDATE 
+ on IMAGENES
+ FOR EACH ROW
+ BEGIN
+  
+    IF DELETING AND :OLD.IMAGEN.getUpdateTime() < TO_DATE ('01/05/2019','DD/MM/YYYY') THEN 
+         raise_application_error (-20001,' No puede borar imagenes con fecha de actualización anterior al 01/05/2019');
+    end if;
+ 
+     IF UPDATING AND :OLD.IMAGEN.getMimeType() = 'image/png' AND :NEW.IMAGEN.getMimeType() ='image/jpeg' THEN 
+         raise_application_error (-20001,' No puede pasar de png  a jpeg');
+    end if;
+ 
+ 
+ END;
+
+
+
+EJERCICIO2 
+
+CREATE OR REPLACE FUNCTION TotalBytesMime (pMime in varchar2)  return number is 
+
+
+CURSOR cursor1 is select nombre, imagen  from imagenes;
+wtotal number:=0;
+
+BEGIN
+ for R in cursor1
+ loop
+     if    r.imagen.getMimeType()= pMime then 
+         wtotal:=wtotal+ r.imagen.getContentLength() ;
+     end if;
+ end loop;  
+
+   return wtotal/1024;
+
+END;
+/

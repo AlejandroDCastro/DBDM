@@ -1,0 +1,30 @@
+[{
+	"_id" : 1,
+	"Nombre" : "Robin",
+	"Tipo" :  "Arquero",
+	"Nivel_Habilidad" :    2,
+	"Genero" : "Masculino",
+	"Activo"   : "S"	
+}, {
+	"_id" : 2,
+	"Nombre" : "Ivanka",
+	"Tipo" :  "Hechicera",
+	"Nivel_Habilidad" :    5,
+	"Genero" : "Femenino",
+	"Activo"   : "S"
+	}, 
+{
+	"_id" : 3,
+	"Nombre" : "Marcel",
+	"Tipo" :  "Mago",
+	"Nivel_Habilidad" :    3,
+	"Genero" : "Masculino",
+	"Activo"   : "N"
+}, {
+	"_id" : 4,
+	"Nombre" : "Esther",
+	"Tipo" :  "Druida",
+	"Nivel_Habilidad" :    12,
+	"Genero" : "Femenino",
+	"Activo"   : "N"
+}]

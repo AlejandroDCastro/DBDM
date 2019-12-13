@@ -1,0 +1,269 @@
+-- Tablas del modelo de recursos multimedia
+
+
+DROP TABLE CONTROL_ACCESO  CASCADE CONSTRAINTS;
+DROP TABLE RECURSO_PAGO  CASCADE CONSTRAINTS;
+DROP TABLE RECURSO_GRATUITO  CASCADE CONSTRAINTS;
+DROP TABLE MESES  CASCADE CONSTRAINTS;
+DROP TABLE COMPATIBLE_CON  CASCADE CONSTRAINTS;
+DROP TABLE RECURSO  CASCADE CONSTRAINTS;
+DROP TABLE SE_VISUALIZA_CON  CASCADE CONSTRAINTS;
+DROP TABLE VISOR  CASCADE CONSTRAINTS;
+DROP TABLE FORMATO  CASCADE CONSTRAINTS;
+DROP TABLE TIENEN  CASCADE CONSTRAINTS;
+DROP TABLE PORTALES  CASCADE CONSTRAINTS;
+DROP TABLE VERSIONES  CASCADE CONSTRAINTS;
+DROP TABLE SUMINISTRAN  CASCADE CONSTRAINTS;
+DROP TABLE EMPRESAS  CASCADE CONSTRAINTS;
+DROP TABLE PAISES  CASCADE CONSTRAINTS;
+DROP TABLE NAVEGADORES  CASCADE CONSTRAINTS;
+DROP TABLE USUARIOS  CASCADE CONSTRAINTS;
+DROP TABLE CONTADOR_DESCARGAS CASCADE CONSTRAINTS;
+
+CREATE TABLE VISOR
+  (
+    nombre  VARCHAR2(100) CONSTRAINT PK_VISOR PRIMARY KEY,
+    empresa VARCHAR2(100)
+  );
+
+-- Tabla VISOR
+
+INSERT INTO VISOR (nombre,empresa) VALUES ('Internet Explorer','Microsoft');
+INSERT INTO VISOR (nombre, empresa) VALUES ('Chrome','Google');
+INSERT INTO VISOR (nombre, empresa) VALUES ('Corel Photoshop','Adobe');
+INSERT INTO VISOR (nombre, empresa) VALUES ('Windows Media Player','Microsoft');
+INSERT INTO VISOR (nombre, empresa) VALUES ('Paint','Microsoft');
+INSERT INTO VISOR (nombre, empresa) VALUES ('GIMP','Open Source');
+
+CREATE TABLE FORMATO
+  (
+    nombre      VARCHAR2(10) CONSTRAINT PK_FORMATO PRIMARY KEY,
+    descripcion VARCHAR2(100) NOT NULL,
+    anyo        DATE
+  );
+
+-- Tabla Formato
+
+INSERT INTO FORMATO (nombre,descripcion,anyo) VALUES 
+('JPG','Fotografías','01/01/1992');
+INSERT INTO FORMATO (nombre,descripcion,anyo) VALUES ('MP3','Audio digital','01/01/1995');
+INSERT INTO FORMATO (nombre,descripcion,anyo) VALUES ('MPEG4','Video digital','01/01/1998');
+INSERT INTO FORMATO (nombre,descripcion,anyo) VALUES ('MP4','Audio o video digital','01/01/1998');
+INSERT INTO FORMATO (nombre,descripcion,anyo) VALUES ('GIF','Gráficos','01/10/1998');
+INSERT INTO FORMATO (nombre,descripcion,anyo) VALUES ('BMP','Mapas de bits','05/01/1998');
+
+CREATE TABLE SE_VISUALIZA_CON
+  (
+    nombre_visor   VARCHAR2(100),
+    nombre_formato VARCHAR2(10),
+    codec          VARCHAR2(100),
+    CONSTRAINT PK_SE_VISUALIZA_CON PRIMARY KEY (nombre_visor, nombre_formato),
+    CONSTRAINT FK__SE_VISUALIZA_CON_VISOR FOREIGN KEY (nombre_visor) REFERENCES VISOR
+  );
+
+CREATE TABLE RECURSO
+  (
+    codigo         NUMERIC,
+    descripcion    VARCHAR2(100),
+    falta          DATE,
+    nombre_formato VARCHAR2(10),
+    tamanyo        INT,
+    CONSTRAINT PK_RECURSO PRIMARY KEY (codigo),
+    CONSTRAINT FK_RECURSO_FORMATO FOREIGN KEY (nombre_formato) REFERENCES FORMATO
+  );
+
+
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  
+(1,'Zapatillas','01/01/2013','MP3',23000);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  (2,'Vídeo 
+musical canción zapatillas','01/02/2013','MP4',2145587);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  
+(3,'Titanic','01/01/2013','MPEG4',125487);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  (4,'Foto moda 
+con derechos autor','01/02/2013','JPG',2154789);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  (5,'Melodía 
+telediario','01/02/2013','MP3',2514487);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  (6,'Anuncio 
+Universidad Alicante','01/01/2013','MPEG4',452107);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  (7,'Foto 
+profesores UA','15/02/2013','JPG',6898745);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  
+(8,'Paisajes','15/02/2014',NULL,450000);
+INSERT INTO recurso  (codigo,descripcion,falta,nombre_formato,tamanyo)  VALUES  
+(9,'Portadas','15/03/2013',NULL,35000);
+
+
+-- Tabla SE_VISUALIZA_CON
+
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Internet Explorer','JPG','IE_JPG.DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Chrome','MP3','CH_MP3 .DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Corel Photoshop','MPEG4','ADOBE_COD.DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Windows Media Player','MP4','WIN_CODECS.DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Chrome','BMP','GIMP.DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Chrome','JPG','CH_MP3 .DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Corel Photoshop','JPG','ADOBE_COD.DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Windows Media Player','JPG','WIN_CODECS.DLL');
+INSERT INTO SE_VISUALIZA_CON (nombre_visor,nombre_formato,codec)  VALUES  ('Chrome','MPEG4','GIMP.DLL');
+
+
+-- Tabla RECURSO
+
+CREATE TABLE compatible_con  (    nom_formato1 VARCHAR2(10),    nom_formato2 VARCHAR2
+(10),    CONSTRAINT PK_COMPATIBLE_CON PRIMARY KEY (nom_formato1,nom_formato2),    
+	CONSTRAINT FK_COMPATIBLE_CON_FORMATO1 FOREIGN KEY (nom_formato1) REFERENCES 
+formato,
+        CONSTRAINT FK_COMPATIBLE_CON_FORMATO2 FOREIGN KEY (nom_formato2) REFERENCES 
+formato
+  );
+
+CREATE TABLE recurso_gratuito
+  (
+    codigo NUMERIC CONSTRAINT PK_RECURSO_GRATUITO PRIMARY KEY, path VARCHAR2(250), max_descargas NUMERIC, 
+CONSTRAINT FK_RECURSO_GRATUITO_RECURSOS FOREIGN KEY(codigo) REFERENCES recurso);
+
+
+CREATE TABLE recurso_pago
+  (
+    codigo NUMERIC CONSTRAINT PK_RECURSO_PAGO PRIMARY KEY,
+    precio DECIMAL(10,2) NOT NULL, contenido BLOB, CONSTRAINT FK_RECURSO_PAGO_RECURSOS 
+FOREIGN KEY (codigo) REFERENCES recurso);
+
+CREATE TABLE meses
+  (mes VARCHAR2(9) CONSTRAINT PK_MESES PRIMARY KEY
+  );
+
+CREATE TABLE usuarios
+  (
+    identificador VARCHAR2(100) CONSTRAINT PK_USUARIOS PRIMARY KEY,
+    nombre        VARCHAR2(100)
+  );
+
+CREATE TABLE contador_descargas
+(
+    cod_recurso NUMERIC,
+    id_usuario varchar2(100) ,
+    contador numeric NOT NULL,
+    CONSTRAINT PK_contador_Descargas primary key (cod_recurso,id_usuario),
+    CONSTRAINT FK_contador_Descargas_recurso FOREIGN KEY (cod_recurso) references recurso_gratuito,
+    CONSTRAINT FK_contador_descargas_usuarios FOREIGN KEY (id_usuario) references usuarios
+);
+
+
+CREATE TABLE control_acceso
+  (
+    cod_recurso NUMERIC NOT NULL,
+    id_usuario  VARCHAR2(100),
+    mes         VARCHAR2(9),
+    CONSTRAINT PK_CONTROL_ACCESO PRIMARY KEY (id_usuario,mes),
+    CONSTRAINT FK_CONTROL_ACCESO_RECURSO_PAGO FOREIGN KEY (cod_recurso) REFERENCES 
+recurso_pago,
+    CONSTRAINT FK_CONTROL_ACCESO_USUARIOS FOREIGN KEY (id_usuario) REFERENCES usuarios,
+    CONSTRAINT FK_CONTROL_ACCESO_MESES FOREIGN KEY (mes) REFERENCES meses, 
+    CONSTRAINT UQ_CONTROL_ACCESO UNIQUE (id_usuario,cod_recurso)
+  );
+
+
+INSERT INTO usuarios  (identificador,nombre)  VALUES  ('alumno1@ua.es','El alumno uno'  
+);
+INSERT INTO usuarios  (identificador,nombre)  VALUES  ('alumno2@ua.es','El alumno dos'  
+);
+
+INSERT INTO meses  (mes  ) VALUES  ('Febrero'  );
+INSERT INTO meses  (mes  ) VALUES  ('Enero'  );
+INSERT INTO meses  (mes  ) VALUES  ('Marzo'  );
+INSERT INTO meses  (mes  ) VALUES  ('Abril'  );
+INSERT INTO meses  (mes  ) VALUES  ('Mayo'  );
+INSERT INTO meses  (mes  ) VALUES  ('Junio'  );
+INSERT INTO meses  (mes  ) VALUES  ('Julio'  );
+
+  
+INSERT INTO RECURSO_PAGO (codigo,precio) VALUES (1,3.0);
+INSERT INTO RECURSO_PAGO(codigo,precio) VALUES (2,2.5);
+INSERT INTO RECURSO_PAGO(codigo,precio) VALUES (3,100);
+INSERT INTO RECURSO_PAGO(codigo,precio) VALUES (4,15.55);
+INSERT INTO RECURSO_GRATUITO(codigo,max_descargas) VALUES (5,100);
+INSERT INTO RECURSO_GRATUITO(codigo,max_descargas) VALUES (6,120);
+INSERT INTO RECURSO_GRATUITO(codigo,max_descargas) VALUES (7,80);
+
+INSERT INTO contador_descargas (cod_recurso,id_usuario,contador) VALUES (5,'alumno1@ua.es',5);
+INSERT INTO contador_descargas (cod_recurso,id_usuario,contador) VALUES (6,'alumno1@ua.es',10);
+INSERT INTO contador_descargas (cod_recurso,id_usuario,contador) VALUES (5,'alumno2@ua.es',50);
+
+  
+INSERT INTO compatible_con VALUES('MP3','MP4');
+  
+INSERT INTO control_acceso (cod_recurso,id_usuario,mes) VALUES 
+(1,'alumno1@ua.es','Febrero');
+
+  
+CREATE TABLE navegadores (nombre VARCHAR2(50) CONSTRAINT PK_NAVEGADORES PRIMARY KEY, 
+anyo DATE NOT NULL);
+CREATE TABLE paises (pais VARCHAR2(3) CONSTRAINT PK_PAISES PRIMARY KEY, renta_per 
+DECIMAL(8,2));
+CREATE TABLE empresas (cif VARCHAR2(10) CONSTRAINT PK_EMPRESAS PRIMARY KEY, nombre 
+VARCHAR2(30), pais VARCHAR2(3) CONSTRAINT FK_EMPRESAS_PAISES REFERENCES PAISES);
+CREATE TABLE suministran(cif VARCHAR2(10), nombre VARCHAR2(50) CONSTRAINT 
+FK_SUMINISTRAN_NAVEGADORES REFERENCES navegadores, CONSTRAINT PK_SUMINISTRAN PRIMARY 
+KEY(cif,nombre));
+CREATE TABLE versiones(version DECIMAL(5,2), anyo VARCHAR2(4) NOT NULL, mejoras 
+VARCHAR2(250), nombre VARCHAR2(50) CONSTRAINT FK_VERSIONES_NAVEGADORES REFERENCES 
+navegadores,CONSTRAINT PK_VERSIONES PRIMARY KEY (version,nombre));
+CREATE TABLE portales (nombre VARCHAR2(50) CONSTRAINT PK_PORTALES PRIMARY KEY, num_usu 
+INTEGER);
+CREATE TABLE tienen (version DECIMAL(5,2), nombre VARCHAR2(50), identificador VARCHAR2
+(100), nombre_portal VARCHAR(50), CONSTRAINT PK_TIENEN PRIMARY KEY (version, nombre, 
+identificador), CONSTRAINT FK_TIENEN_VERSIONES FOREIGN KEY (version,nombre) REFERENCES 
+versiones, CONSTRAINT FK_TIENEN_USUARIOS FOREIGN KEY (identificador) REFERENCES 
+usuarios, CONSTRAINT FK_TIENEN_PORTAL FOREIGN KEY (nombre_portal) REFERENCES portales);
+  
+INSERT INTO navegadores (nombre, anyo) VALUES ('Internet Explorer','01/01/1996');
+INSERT INTO navegadores (nombre, anyo) VALUES ('Chrome','01/01/2003');
+INSERT INTO navegadores (nombre, anyo) VALUES ('Firefox','01/01/1997');
+INSERT INTO navegadores (nombre, anyo) VALUES ('Safari','01/01/1994');
+
+INSERT INTO paises (pais,renta_per) VALUES ('ESP',1500);
+INSERT INTO paises (pais,renta_per) VALUES ('USA',2500);
+INSERT INTO paises (pais,renta_per) VALUES ('GER',2500);
+INSERT INTO paises (pais,renta_per) VALUES ('ITA',1800);
+
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U111111111','Microsoft 
+Corporation','USA');
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U222222222','Google','USA');
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U333333333','Mozilla','USA');
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U444444444','Apple','USA');
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U555555555','FX Interactive','ESP');
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U666666666','Software 
+Español','ESP');
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U777777777','Software 
+Extranjero',NULL);
+INSERT INTO empresas (cif, nombre, pais) VALUES ('U888888888','Software de 
+calidad',NULL);
+
+INSERT INTO suministran (cif,nombre) VALUES ('U111111111','Internet Explorer');
+INSERT INTO suministran (cif,nombre) VALUES ('U222222222','Chrome');
+INSERT INTO suministran (cif,nombre) VALUES ('U333333333','Firefox');
+INSERT INTO suministran (cif,nombre) VALUES ('U444444444','Safari');
+
+INSERT INTO versiones (version, anyo, mejoras, nombre) VALUES (1.0,'1996','Version 
+inicial','Internet Explorer');
+INSERT INTO versiones (version, anyo, mejoras, nombre) VALUES (1.0,'2003','Version 
+inicial','Chrome');
+INSERT INTO versiones (version, anyo, mejoras, nombre) VALUES (1.0,'1997','Version 
+inicial','Firefox');
+INSERT INTO versiones (version, anyo, mejoras, nombre) VALUES (1.0,'1994','Version 
+inicial','Safari');
+
+INSERT INTO portales (nombre, num_usu) VALUES ('Terra',1000);
+INSERT INTO portales (nombre, num_usu) VALUES ('Chaplin',200);
+INSERT INTO portales (nombre, num_usu) VALUES ('Agile',500);
+
+INSERT INTO tienen(version,nombre,identificador,nombre_portal) VALUES 
+(1.0,'Internet Explorer','alumno1@ua.es','Terra');
+INSERT INTO tienen(version,nombre,identificador,nombre_portal) VALUES 
+(1.0,'Chrome','alumno2@ua.es','Terra');
+
+
+commit;
+
+
+
